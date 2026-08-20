@@ -1,0 +1,261 @@
+@import './fonts.css';
+
+/* ─────────────────────────────────────────────────────────────
+   Tout dérive de six valeurs. Aucune couleur n'est écrite ailleurs.
+   ───────────────────────────────────────────────────────────── */
+:root {
+  --nuit: #0c0a08;
+  --moquette: #17130f;
+  --poussiere: #2a2119;
+  --laiton: #b08a4a;
+  --torche: #e8d4a8;
+  --ronde: #6e7f86;
+
+  /* Dérivés. Rien n'est un aplat pur. */
+  --encre: color-mix(in oklab, var(--torche) 72%, var(--poussiere));
+  --encre-faible: color-mix(in oklab, var(--torche) 34%, var(--nuit));
+  --encre-tres-faible: color-mix(in oklab, var(--torche) 18%, var(--nuit));
+  --trait: color-mix(in oklab, var(--laiton) 30%, var(--nuit));
+  --halo: color-mix(in oklab, var(--torche) 14%, transparent);
+  --menace: color-mix(in oklab, var(--ronde) 62%, var(--nuit));
+
+  --display: 'Bodoni Moda', Didot, 'Times New Roman', serif;
+  --note: 'Courier Prime', ui-monospace, 'Courier New', monospace;
+  --corps: 'Archivo', system-ui, sans-serif;
+
+  --e1: 4px;
+  --e2: 8px;
+  --e3: 16px;
+  --e4: 24px;
+  --e5: 40px;
+  --e6: 64px;
+
+  --t-fondu: 900ms;
+  --t-court: 240ms;
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  background: var(--nuit);
+  color: var(--encre);
+  font-family: var(--corps);
+  overscroll-behavior: none;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+  overflow: hidden;
+}
+
+#app {
+  position: fixed;
+  inset: 0;
+  /* La barre d'adresse d'iOS mange l'écran : on prend la hauteur réelle. */
+  height: 100dvh;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 1px solid var(--laiton);
+  outline-offset: 5px;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Le fond commun à tous les écrans hors-jeu : le noir chaud, un halo
+   de torche posé haut, du grain. Jamais un aplat.
+   ───────────────────────────────────────────────────────────── */
+.piece {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background:
+    radial-gradient(120% 70% at 50% 12%, var(--halo) 0%, transparent 58%),
+    radial-gradient(90% 60% at 50% 100%, var(--moquette) 0%, transparent 70%),
+    var(--nuit);
+}
+
+.piece::after {
+  content: '';
+  position: absolute;
+  inset: -10%;
+  pointer-events: none;
+  opacity: 0.055;
+  background-image: repeating-conic-gradient(
+    from 0deg at 50% 50%,
+    #fff 0deg 0.6deg,
+    #000 0.6deg 1.2deg
+  );
+  background-size: 3px 3px;
+  mix-blend-mode: overlay;
+}
+
+.piece::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    76% 58% at 50% 42%,
+    transparent 0%,
+    rgba(12, 10, 8, 0.55) 62%,
+    rgba(12, 10, 8, 0.97) 100%
+  );
+}
+
+.contenu {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  align-content: center;
+  justify-items: start;
+  gap: var(--e4);
+  padding: var(--e5) var(--e5) var(--e6);
+  max-width: 34rem;
+  margin: 0 auto;
+  width: 100%;
+  /* Une carte plus haute que l'écran doit rester atteignable : c'est le seul
+     endroit du jeu où le doigt sert à quelque chose. */
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  scrollbar-width: none;
+}
+
+.contenu::-webkit-scrollbar {
+  display: none;
+}
+
+.contenu > * {
+  max-width: 100%;
+}
+
+/* Titres : petites capitales espacées, jamais en gras. */
+.titre {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(1.7rem, 7.5vw, 2.6rem);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  line-height: 1.25;
+  color: var(--encre);
+}
+
+.numeral {
+  font-family: var(--display);
+  font-size: 0.9rem;
+  letter-spacing: 0.4em;
+  color: var(--encre-tres-faible);
+}
+
+.filet {
+  width: 3.4rem;
+  height: 1px;
+  background: var(--trait);
+  border: 0;
+}
+
+/* Les notes du cambrioleur. */
+.note {
+  font-family: var(--note);
+  font-size: clamp(0.88rem, 3.9vw, 1rem);
+  line-height: 1.7;
+  color: var(--encre);
+}
+
+.note--faible {
+  color: var(--encre-faible);
+}
+
+.note p + p {
+  margin-top: var(--e3);
+}
+
+.action {
+  font-family: var(--note);
+  font-size: 0.86rem;
+  letter-spacing: 0.26em;
+  text-transform: lowercase;
+  color: var(--laiton);
+  padding: var(--e3) var(--e4);
+  border: 1px solid var(--trait);
+  align-self: flex-start;
+  transition: border-color var(--t-court) var(--ease), color var(--t-court) var(--ease);
+}
+
+.action:hover,
+.action:focus-visible {
+  border-color: var(--laiton);
+  color: var(--torche);
+}
+
+.action:active {
+  color: var(--encre-faible);
+}
+
+/* Ouverture orchestrée : le noir, la torche, puis le titre. */
+@keyframes lever {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes allumer {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.entre {
+  animation: lever var(--t-fondu) var(--ease) both;
+}
+
+.entre--1 { animation-delay: 240ms; }
+.entre--2 { animation-delay: 700ms; }
+.entre--3 { animation-delay: 1150ms; }
+.entre--4 { animation-delay: 1550ms; }
+
+.torche-monte {
+  animation: allumer 1800ms var(--ease) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Les transitions deviennent des fondus, sans déplacement. */
+  .entre,
+  .torche-monte {
+    animation: allumer 400ms linear both;
+  }
+  * {
+    transition-duration: 1ms !important;
+  }
+}
